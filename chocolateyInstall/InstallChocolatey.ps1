@@ -25,9 +25,16 @@ $tempDir = Join-Path $chocTempDir "chocInstall"
 if (![System.IO.Directory]::Exists($tempDir)) {[System.IO.Directory]::CreateDirectory($tempDir)}
 $file = Join-Path $tempDir "chocolatey.zip"
 
+#set proxy
+$proxyAddr = (get-itemproperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings').ProxyServer
+$proxy = new-object System.Net.WebProxy
+$proxy.Address = $proxyAddr
+$proxy.useDefaultCredentials = $true
+
 # download the package
 Write-Host "Downloading $url to $file"
 $downloader = new-object System.Net.WebClient
+$downloader.proxy = $proxy
 $downloader.DownloadFile($url, $file)
 
 # unzip the package
